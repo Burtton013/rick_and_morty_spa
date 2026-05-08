@@ -1,12 +1,26 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CustomJumbotron } from "@/components/custom/CustomJumbotron";
 import { SearchBar } from "../search/ui/SearchBar";
-import { useState } from "react";
 import { CharacterGrid } from "@/characters/components/CharacterGrid";
 import { CustomPagination } from "@/components/custom/CustomPagination";
+import { getCharacterByPageAction } from "@/characters/actions/get-character-by-page.actions";
 
 export const HomePage = () => {
   const [activeTab, setActiveTab] = useState<"all" | "favorites">("all");
+
+  //-----> Peticion
+
+  const { data: charactersResponse } = useQuery({
+    queryKey: ["characters"],
+    queryFn: () => getCharacterByPageAction(1),
+    staleTime: 1000 * 60 * 5, //5 minutos
+  });
+
+  console.log(charactersResponse);
+
   return (
     <>
       <>
@@ -38,13 +52,11 @@ export const HomePage = () => {
 
           {/*-------------------> Grid de todos los personajes */}
           <TabsContent value="all">
-            <CharacterGrid />
+            <CharacterGrid characters={charactersResponse?.results ?? []} />
           </TabsContent>
 
           {/*-------------------> Grid de personajes favoritos*/}
-          <TabsContent value="favorites">
-            <CharacterGrid />
-          </TabsContent>
+          <TabsContent value="favorites">{/* <CharacterGrid /> */}</TabsContent>
         </Tabs>
 
         {/*-------------------> Paginacion*/}
