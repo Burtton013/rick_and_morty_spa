@@ -1,25 +1,30 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CustomJumbotron } from "@/components/custom/CustomJumbotron";
 import { SearchBar } from "../search/ui/SearchBar";
 import { CharacterGrid } from "@/characters/components/CharacterGrid";
 import { CustomPagination } from "@/components/custom/CustomPagination";
-import { getCharacterByPageAction } from "@/characters/actions/get-character-by-page.actions";
+import { useSearchParams } from "react-router";
+import { usePagesCharacters } from "@/characters/hooks/usePagesCharacters";
 
 export const HomePage = () => {
-  const [activeTab, setActiveTab] = useState<"all" | "favorites">("all");
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  //-----> Peticion
+  //--> Params paginacion
+  const page = searchParams.get("page") ?? "1";
 
-  const { data: charactersResponse } = useQuery({
-    queryKey: ["characters"],
-    queryFn: () => getCharacterByPageAction(1),
-    staleTime: 1000 * 60 * 5, //5 minutos
-  });
+  //--> Params Active Tab ++ validacion
+  const activeTab = searchParams.get("tab") ?? "all";
 
-  console.log(charactersResponse);
+  const selectedTab = useMemo(() => {
+    const validTab = ["all", "favorites"];
+    return validTab.includes(activeTab) ? activeTab : "all";
+  }, [activeTab]);
+
+  //----> Api Request
+
+  const { data: charactersResponse } = usePagesCharacters(Number(page));
 
   return (
     <>
@@ -30,19 +35,32 @@ export const HomePage = () => {
           subtitle="Base de datos de personajes de Rick & Morty"
         />
         {/* -------------------> Tabs */}
-        <Tabs value={activeTab} className="w-full">
+        <Tabs value={selectedTab} className="w-full">
           <div className="flex items-center gap-4 mb-8">
             {/*-------------------> Search Bar */}
             <SearchBar />
 
             <TabsList className="grid grid-cols-2 shrink-0">
-              <TabsTrigger value="all" onClick={() => setActiveTab("all")}>
+              <TabsTrigger
+                value="all"
+                onClick={() =>
+                  setSearchParams((prev) => {
+                    prev.set("tab", "all");
+                    return prev;
+                  })
+                }
+              >
                 Todos los personajes
               </TabsTrigger>
 
               <TabsTrigger
                 value="favorites"
-                onClick={() => setActiveTab("favorites")}
+                onClick={() =>
+                  setSearchParams((prev) => {
+                    prev.set("tab", "favorites");
+                    return prev;
+                  })
+                }
                 className="flex items-center gap-2"
               >
                 Favoritos (3)
@@ -60,7 +78,7 @@ export const HomePage = () => {
         </Tabs>
 
         {/*-------------------> Paginacion*/}
-        <CustomPagination totalPages={8} />
+        <CustomPagination totalPages={charactersResponse?.info.pages ?? 0} />
       </>
     </>
   );
