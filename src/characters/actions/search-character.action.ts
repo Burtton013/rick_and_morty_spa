@@ -24,5 +24,3 @@ export const searchCharactersAction = async (
 
   return data.results;
 };
-
-// https://rickandmortyapi.com/name=rick

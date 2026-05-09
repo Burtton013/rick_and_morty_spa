@@ -2,24 +2,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import type { Character } from "../interface/character.interface";
-import { useNavigate } from "react-router";
+
 import { use } from "react";
 import { FavoriteCharacterContext } from "../context/FavoriteCharacterContext";
 
 interface Props {
   character: Character;
+  onSelect: (character: Character) => void;
 }
 
-export const CharacterGridCard = ({ character }: Props) => {
-  const navigate = useNavigate();
-
+export const CharacterGridCard = ({ character, onSelect }: Props) => {
   //----> consumiendo Context
 
   const { isFav, toggleFav } = use(FavoriteCharacterContext);
-
-  const handleClick = () => {
-    navigate(`/character/${character.id}`);
-  };
 
   return (
     <Card className="group overflow-hidden p-0 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl bg-linear-to-br from-white to-gray-50">
@@ -27,8 +22,8 @@ export const CharacterGridCard = ({ character }: Props) => {
         <img
           src={character.image}
           alt="Superman"
-          className="h-full w-full object-cover transition-all duration-500 group-hover:scale-110"
-          onClick={handleClick}
+          className="cursor-pointer h-full w-full object-cover transition-all duration-500 group-hover:scale-110"
+          onClick={() => onSelect(character)}
         />
       </div>
       <CardHeader className="flex flex-row items-center justify-between pb-3">

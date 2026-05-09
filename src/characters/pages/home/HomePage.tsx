@@ -1,4 +1,4 @@
-import { use } from "react";
+import { use, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CustomJumbotron } from "@/components/custom/CustomJumbotron";
@@ -10,9 +10,14 @@ import { useSelectedTab } from "@/characters/hooks/useSelectedTab";
 import { FavoriteCharacterContext } from "@/characters/context/FavoriteCharacterContext";
 
 import { useSearchedCharacter } from "@/characters/hooks/useSearchedCharacter";
+import type { Character } from "@/characters/interface/character.interface";
+import { CharacterModal } from "@/characters/components/CharacterModal";
 
 export const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  //--> State modal
+  const [open, setOpen] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
 
   //--> Params paginacion
   const page = searchParams.get("page") ?? "1";
@@ -33,6 +38,13 @@ export const HomePage = () => {
 
   //----> Context fav
   const { favCount, favs } = use(FavoriteCharacterContext);
+
+  //----> Abrir Modal
+
+  const handleOpenModal = (character: Character) => {
+    setSelectedCharacter(character);
+    setOpen(true);
+  };
 
   return (
     <>
@@ -86,12 +98,13 @@ export const HomePage = () => {
         <TabsContent value="all">
           <CharacterGrid
             characters={name ? searchedCharacters : (charactersResponse?.results ?? [])}
+            onSelect={handleOpenModal}
           />
         </TabsContent>
 
         {/*-------------------> Grid de personajes favoritos*/}
         <TabsContent value="favorites">
-          <CharacterGrid characters={favs} />
+          <CharacterGrid characters={favs} onSelect={handleOpenModal} />
         </TabsContent>
       </Tabs>
 
@@ -99,6 +112,8 @@ export const HomePage = () => {
       {selectedTab !== "favorites" && !name && (
         <CustomPagination totalPages={charactersResponse?.info.pages ?? 0} />
       )}
+      {/*-------------------> Modal*/}
+      <CharacterModal open={open} onOpen={setOpen} character={selectedCharacter} />
     </>
   );
 };

@@ -1,8 +1,6 @@
 import { CharactersLayout } from "@/characters/layouts/CharactersLayout";
-import { CharacterPage } from "@/characters/pages/character/CharacterPage";
 import { HomePage } from "@/characters/pages/home/HomePage";
 import { createBrowserRouter, Navigate } from "react-router";
-import { SearchPage } from "./lazyPages";
 
 export const appRouter = createBrowserRouter([
   {
@@ -12,14 +10,6 @@ export const appRouter = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
-      },
-      {
-        path: "character/:idSlug",
-        element: <CharacterPage />,
-      },
-      {
-        path: "search",
-        element: <SearchPage />,
       },
       {
         path: "*",
