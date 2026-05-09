@@ -3,6 +3,8 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import type { Character } from "../interface/character.interface";
 import { useNavigate } from "react-router";
+import { use } from "react";
+import { FavoriteCharacterContext } from "../context/FavoriteCharacterContext";
 
 interface Props {
   character: Character;
@@ -10,6 +12,10 @@ interface Props {
 
 export const CharacterGridCard = ({ character }: Props) => {
   const navigate = useNavigate();
+
+  //----> consumiendo Context
+
+  const { isFav, toggleFav } = use(FavoriteCharacterContext);
 
   const handleClick = () => {
     navigate(`/character/${character.id}`);
@@ -32,8 +38,13 @@ export const CharacterGridCard = ({ character }: Props) => {
           size="sm"
           variant="ghost"
           className="border border-gray-200 p-2 hover:bg-gray-100"
+          onClick={() => toggleFav(character)}
         >
-          <Star className="h-4 w-4 fill-blue-500 text-blue-500" />
+          <Star
+            className={`h-4 w-4 ${
+              isFav(character) ? "fill-blue-500 text-blue-500" : "text-gray-500"
+            }`}
+          />
         </Button>
       </CardHeader>
     </Card>

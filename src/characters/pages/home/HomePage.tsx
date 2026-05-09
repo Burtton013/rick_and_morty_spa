@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CustomJumbotron } from "@/components/custom/CustomJumbotron";
 import { SearchBar } from "../search/ui/SearchBar";
@@ -7,6 +5,9 @@ import { CharacterGrid } from "@/characters/components/CharacterGrid";
 import { CustomPagination } from "@/components/custom/CustomPagination";
 import { useSearchParams } from "react-router";
 import { usePagesCharacters } from "@/characters/hooks/usePagesCharacters";
+import { useSelectedTab } from "@/characters/hooks/useSelectedTab";
+import { FavoriteCharacterContext } from "@/characters/context/FavoriteCharacterContext";
+import { use } from "react";
 
 export const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,15 +18,15 @@ export const HomePage = () => {
   //--> Params Active Tab ++ validacion
   const activeTab = searchParams.get("tab") ?? "all";
 
-  const selectedTab = useMemo(() => {
-    const validTab = ["all", "favorites"];
-    return validTab.includes(activeTab) ? activeTab : "all";
-  }, [activeTab]);
+  const selectedTab = useSelectedTab(activeTab);
 
   //----> Api Request
 
   const { data: charactersResponse } = usePagesCharacters(Number(page));
 
+  //context fav
+
+  const { favCount, favs } = use(FavoriteCharacterContext);
   return (
     <>
       <>
@@ -63,7 +64,7 @@ export const HomePage = () => {
                 }
                 className="flex items-center gap-2"
               >
-                Favoritos (3)
+                Favoritos ({favCount})
               </TabsTrigger>
             </TabsList>
           </div>
@@ -74,11 +75,15 @@ export const HomePage = () => {
           </TabsContent>
 
           {/*-------------------> Grid de personajes favoritos*/}
-          <TabsContent value="favorites">{/* <CharacterGrid /> */}</TabsContent>
+          <TabsContent value="favorites">
+            <CharacterGrid characters={favs} />
+          </TabsContent>
         </Tabs>
 
         {/*-------------------> Paginacion*/}
-        <CustomPagination totalPages={charactersResponse?.info.pages ?? 0} />
+        {selectedTab !== "favorites" && (
+          <CustomPagination totalPages={charactersResponse?.info.pages ?? 0} />
+        )}
       </>
     </>
   );

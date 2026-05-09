@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { useSearchParams } from "react-router";
-import { usePaginationEnum } from "@/characters/hooks/usePagination";
+import { usePaginationEnum } from "@/characters/hooks/usePaginationEnum";
 
 interface Props {
   totalPages: number;
@@ -12,7 +12,7 @@ export const CustomPagination = ({ totalPages }: Props) => {
 
   const queryPage = searchParams.get("page") ?? "1";
 
-  const page = isNaN(+queryPage) ? 1 : Number(queryPage);
+  const page = isNaN(Number(queryPage)) ? 1 : Number(queryPage);
 
   // -> Custom hook
   const pages = usePaginationEnum(page, totalPages);
