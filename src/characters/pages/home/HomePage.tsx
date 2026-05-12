@@ -110,7 +110,7 @@ export const HomePage = () => {
 
       {/*-------------------> Paginacion*/}
       {selectedTab !== "favorites" && !name && (
-        <CustomPagination totalPages={charactersResponse?.info.pages ?? 0} />
+        <CustomPagination totalPages={charactersResponse?.info?.pages ?? 2} />
       )}
       {/*-------------------> Modal*/}
       <CharacterModal open={open} onOpen={setOpen} character={selectedCharacter} />
