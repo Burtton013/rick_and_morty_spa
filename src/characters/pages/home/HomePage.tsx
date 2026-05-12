@@ -56,7 +56,7 @@ export const HomePage = () => {
 
       {/* -------------------> Tabs */}
       <Tabs value={selectedTab} className="w-full">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center">
           {/*-------------------> Search Bar */}
           <SearchBar />
 
